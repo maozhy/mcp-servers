@@ -1,4 +1,3 @@
-import asyncio
 import os
 import win32com.client
 from win32com.client import constants
@@ -131,4 +130,4 @@ async def word_edit(file_path: str):
 
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    mcp.run(transport="stdio")

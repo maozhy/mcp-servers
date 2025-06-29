@@ -1,7 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 import smtplib
 from email.message import EmailMessage
-import os
 
 # Initialize FastMCP server
 mcp = FastMCP("email_server")
