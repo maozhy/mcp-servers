@@ -12,7 +12,7 @@ async def word_create(file_path: str):
 
 
 @mcp.tool(name="word_open")
-async def word_create(file_path: str, args: str = ""):
+async def word_open(file_path: str, args: str = ""):
     if not isinstance(file_path, str) or not file_path:
         return {"success": False, "message": "file_path 不能为空且必须为字符串"}
     if not os.path.isabs(file_path):
@@ -125,8 +125,40 @@ async def word_insert(file_path: str, text: str, insert_flag: int, target: dict)
 
 
 @mcp.tool(name="word_edit")
-async def word_edit(file_path: str):
-    pass
+async def word_edit(file_path: str, text: str, target: dict):
+    """
+    替换Word文档第5行中的“我的”为text参数内容（仅第5行，非第5段）。
+    """
+    file_path = os.path.abspath(file_path)
+    if not os.path.exists(file_path):
+        return "文件不存在，请检查路径。"
+    try:
+        word = win32com.client.gencache.EnsureDispatch("Word.Application")
+        word.Visible = False
+        doc = word.Documents.Open(file_path)
+        selection = word.Selection
+
+        selection.GoTo(
+            What=constants.wdGoToLine,
+            Which=constants.wdGoToAbsolute,
+            Count=target["line_num"],
+        )
+
+        selection.HomeKey(Unit=constants.wdLine)
+        selection.EndKey(Unit=constants.wdLine, Extend=1)
+        line_text = selection.Text
+
+        if target["tar_text"] not in line_text:
+            doc.Close(SaveChanges=0)
+            word.Quit()
+            return f"第{target['line_num']}行未找到“{target['tar_text']}”"
+
+        new_line = line_text.replace(target["tar_text"], text)
+        selection.TypeText(new_line)
+        doc.SaveAs(file_path)
+        return f"第{target['line_num']}行“{target['tar_text']}”已替换为指定内容"
+    except Exception as e:
+        return f"发生错误: {e}"
 
 
 if __name__ == "__main__":

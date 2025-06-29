@@ -6,8 +6,8 @@ from email.message import EmailMessage
 mcp = FastMCP("email_server")
 
 
-@mcp.tool()
-async def send_email(to: list, sub: str, message: str, is_ok: bool = False) -> str:
+@mcp.tool(name="send_email", title="发送邮件")
+async def send_email(to: list, sub: str, message: str, is_ok: bool = False, cc: list = None) -> str:
     if is_ok == False:
         return "待用户二次确认"
     SMTP_SERVER = "smtp.qq.com"
@@ -20,19 +20,24 @@ async def send_email(to: list, sub: str, message: str, is_ok: bool = False) -> s
     msg["Subject"] = sub
     msg["From"] = SMTP_USER
     msg["To"] = ", ".join(to)
+    if cc:
+        msg["Cc"] = ", ".join(cc)
     msg.set_content(message)
 
     try:
         if SMTP_SSL:
             with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
                 server.login(SMTP_USER, SMTP_PASS)
-                server.send_message(msg)
+                # 合并收件人和抄送人
+                all_recipients = to + (cc if cc else [])
+                server.send_message(msg, to_addrs=all_recipients)
                 server.close()
         else:
             with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
                 server.starttls()
                 server.login(SMTP_USER, SMTP_PASS)
-                server.send_message(msg)
+                all_recipients = to + (cc if cc else [])
+                server.send_message(msg, to_addrs=all_recipients)
                 server.close()
         return "邮件发送成功"
     except Exception as e:
