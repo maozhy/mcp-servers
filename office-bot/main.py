@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import win32com.client
 from win32com.client import constants

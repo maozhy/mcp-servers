@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from mcp.server.fastmcp import FastMCP
 import smtplib
 from email.message import EmailMessage
@@ -6,8 +8,23 @@ from email.message import EmailMessage
 mcp = FastMCP("email_server")
 
 
-@mcp.tool(name="send_email", title="发送邮件")
-async def send_email(to: list, sub: str, message: str, is_ok: bool = False, cc: list = None) -> str:
+@mcp.tool(name="send_email")
+async def send_email(
+    to: list, sub: str, message: str, is_ok: bool = False, cc: list = None
+) -> str:
+    """
+    发送邮件
+
+    参数:
+        to (list): 收件人列表
+        cc (list): 抄送人列表
+        sub (str): 邮件主题
+        message (str): 邮件正文
+        is_ok (bool): 是否经过用户二次确认
+
+    返回:
+        str: 操作结果描述
+    """
     if is_ok == False:
         return "待用户二次确认"
     SMTP_SERVER = "smtp.qq.com"
@@ -41,8 +58,7 @@ async def send_email(to: list, sub: str, message: str, is_ok: bool = False, cc: 
                 server.close()
         return "邮件发送成功"
     except Exception as e:
-        res = f"邮件发送失败: {type(e).__name__}: {e}"
-        return res
+        return f"邮件发送失败: {type(e).__name__}: {e}"
 
 
 if __name__ == "__main__":
