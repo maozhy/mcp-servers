@@ -7,8 +7,29 @@ mcp = FastMCP(name="office-bot")
 
 
 @mcp.tool(name="word_create")
-async def word_create(file_path: str):
-    pass
+async def word_create(file_path: str, file_name: str = "新建文档.docx"):
+    """
+    新建空白Word文档。
+
+    参数:
+        file_path (str): Word文档存储文件夹
+        file_name (str): Word文档文件名，默认为"新建文档.docx"
+
+    返回:
+        dict: 操作结果描述
+    """
+    try:
+        # 拼接完整路径
+        full_path = os.path.join(file_path, file_name)
+        # 确保目录存在
+        os.makedirs(file_path, exist_ok=True)
+        word = win32com.client.gencache.EnsureDispatch("Word.Application")
+        word.Visible = False
+        doc = word.Documents.Add()
+        doc.SaveAs(full_path)
+        return {"success": True, "message": f"Word文档已创建: {full_path}"}
+    except Exception as e:
+        return {"success": False, "message": f"创建Word文档失败: {e}"}
 
 
 @mcp.tool(name="word_open")
@@ -32,7 +53,7 @@ async def word_open(file_path: str, args: str = ""):
 @mcp.tool(name="word_read")
 async def word_read(file_path: str):
     # 启动Word应用
-    word = win32com.client.Dispatch("Word.Application")
+    word = win32com.client.gencache.EnsureDispatch("Word.Application")
     doc = word.Documents.Open(file_path)
 
     # 读取全文本
