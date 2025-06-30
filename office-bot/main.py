@@ -24,7 +24,7 @@ async def word_create(file_path: str, file_name: str = "新建文档.docx"):
         # 确保目录存在
         os.makedirs(file_path, exist_ok=True)
         word = win32com.client.gencache.EnsureDispatch("Word.Application")
-        word.Visible = False
+        word.Visible = True
         doc = word.Documents.Add()
         doc.SaveAs(full_path)
         return {"success": True, "message": f"Word文档已创建: {full_path}"}
@@ -170,8 +170,6 @@ async def word_edit(file_path: str, text: str, target: dict):
         line_text = selection.Text
 
         if target["tar_text"] not in line_text:
-            doc.Close(SaveChanges=0)
-            word.Quit()
             return f"第{target['line_num']}行未找到“{target['tar_text']}”"
 
         new_line = line_text.replace(target["tar_text"], text)
