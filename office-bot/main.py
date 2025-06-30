@@ -127,7 +127,7 @@ async def word_insert(file_path: str, text: str, insert_flag: int, target: dict)
 @mcp.tool(name="word_edit")
 async def word_edit(file_path: str, text: str, target: dict):
     """
-    替换Word文档第5行中的“我的”为text参数内容（仅第5行，非第5段）。
+    替换Word文档第target["line_num"]行中的“target["tar_text"]”为text参数内容（仅第5行，非第5段）。
     """
     file_path = os.path.abspath(file_path)
     if not os.path.exists(file_path):
