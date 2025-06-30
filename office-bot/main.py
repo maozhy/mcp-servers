@@ -175,7 +175,8 @@ async def word_edit(file_path: str, text: str, target: dict):
             return f"第{target['line_num']}行未找到“{target['tar_text']}”"
 
         new_line = line_text.replace(target["tar_text"], text)
-        selection.TypeText(new_line)
+        # 直接赋值替换选区内容，避免多余换行
+        selection.Text = new_line
         doc.SaveAs(file_path)
         return f"第{target['line_num']}行“{target['tar_text']}”已替换为指定内容"
     except Exception as e:
