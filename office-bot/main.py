@@ -34,8 +34,8 @@ async def word_create(file_path: str, file_name: str = "新建文档.docx"):
         return {"success": False, "message": f"创建Word文档失败: {e}"}
 
 
-@mcp.tool(name="word_open")
-async def word_open(file_path: str, args: str = ""):
+@mcp.tool(name="file_open")
+async def file_open(file_path: str, args: str = ""):
     if not isinstance(file_path, str) or not file_path:
         return {"success": False, "message": "file_path 不能为空且必须为字符串"}
     if not os.path.isabs(file_path):
