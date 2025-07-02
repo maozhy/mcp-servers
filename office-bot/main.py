@@ -34,8 +34,8 @@ async def word_create(file_path: str, file_name: str = "新建文档.docx"):
         return {"success": False, "message": f"创建Word文档失败: {e}"}
 
 
-@mcp.tool(name="file_open")
-async def file_open(file_path: str, args: str = ""):
+@mcp.tool(name="file_open",title="打开文件",description="根据绝对路径打开文件")
+async def file_open(file_path: str):
     if not isinstance(file_path, str) or not file_path:
         return {"success": False, "message": "file_path 不能为空且必须为字符串"}
     if not os.path.isabs(file_path):
@@ -45,11 +45,11 @@ async def file_open(file_path: str, args: str = ""):
 
     try:
         shell = win32com.client.Dispatch("WScript.Shell")
-        cmd = f'"{file_path}" {args}' if args else f'"{file_path}"'
+        cmd = f'"{file_path}"'
         shell.Run(cmd)
-        return {"success": True, "message": f"已启动: {cmd}"}
+        return f"已打开文件: {cmd}"
     except Exception as e:
-        return {"success": False, "message": f"启动失败: {e}"}
+        return f"打开文件失败: {e}"
 
 
 @mcp.tool(name="word_read")
